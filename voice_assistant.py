@@ -18,11 +18,11 @@ def take_command():
         audio = recognizer.listen(source)
 
     try:
-        print("Rrecognizing...")
-        query = recognizer.recognize_google(audio, language = 'en-in')
+        print("Recognizing...")
+        query = recognizer.recognize_google(audio, language='en-in')
         print(f"User said: {query}\n")
     except sr.UnknownValueError:
-        print("Sorry, I'm having trouble connecting to the speech serviuce.")
+        print("Sorry, I'm having trouble connecting to the speech service.")
         return ""
     return query
 
@@ -32,19 +32,32 @@ if __name__ == "__main__":
 
         if "hello" in query:
             speak("Hello! How can I help you today?")
-        elif"time" in query:
+        elif "time" in query:
             current_time = datetime.datetime.now().strftime("%H:%M:%S")
             speak(f"The current time is {current_time}")
         elif "date" in query:
             current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-            speak(f"Todya's date is {current_date}")
-        elif "search" in query:
-            query = query.replace("wikipedia", "")
-            results = wikipedia.summary(query, sentences=2)
-            speak("According to Wikipedia")
-            speak(results)
+            speak(f"Today's date is {current_date}")
+        elif "search wikipedia" in query:
+            query = query.replace("search wikipedia", "")
+            try:
+                results = wikipedia.summary(query, sentences=2)
+                speak("According to Wikipedia")
+                speak(results)
+            except wikipedia.exceptions.PageError:
+                speak(f"Sorry, I couldn't find anything about {query} on Wikipedia.")
+            except wikipedia.exceptions.DisambiguationError as e:
+                speak(f"There are multiple results for {query}. Could you be more specific?")
+        elif "open youtube" in query:
+            webbrowser.open("https://www.youtube.com")
+            speak("Opening YouTube...")
+        elif "open google" in query:
+            webbrowser.open("https://www.google.com")
+            speak("Opening Google...")
         elif "exit" in query or "quit" in query:
             speak("Goodbye!")
             break
-        elif "exit" in query or "quit" in query:
+        elif "exit" in query or "quit" in query: # This is a duplicate condition
+            speak("I'm sorry, I didn't understand that command.") # This will never be reached
+        else:
             speak("I'm sorry, I didn't understand that command.")
